@@ -23,7 +23,7 @@ import java.util.function.IntPredicate;
 import java.util.stream.Collectors;
 
 @Slf4j
-@PluginDescriptor(name = "Item Processing Warner", description = "Gives advance warning of an inventory finishing processing.", tags = {"item", "items", "processing", "completion", "warn", "warning", "alert"})
+@PluginDescriptor(name = "Item Processing Warner", description = "Alerts and Advance Warnings 0for Item Processing Tasks (e.g. Crafting)", tags = {"item", "items", "processing", "completion", "warn", "warning", "alert", "skilling", "cooking", "crafting", "smithing", "smelting", "fletching", "prayer", "herblore"})
 public class ItemProcessingWarnerPlugin extends Plugin {
     //<editor-fold desc=constants>
     // @formatter:off

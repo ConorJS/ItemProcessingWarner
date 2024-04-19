@@ -1,10 +1,9 @@
-# Camdozaal Fishing Helper
-Provides a simple overlay and useful alerts for Camdozaal fishing/prayer, to make this method a little friendlier.
+# Item Processing Warner
 
-**Attention**: This plugin should not be enabled outside Camdozaal, as it will constantly alert the player. In the future, this may be solved with region checking.
+Alerts based on item processing, both when processing is done, but also when processing is _nearly_ done (i.e. it warns you in advance). This is useful if you want to avoid paying attention, but also do the item processing efficiently.
 
-The plugin highlights the correct bench to use based on which fish you have and what state they are in (processed or otherwise), alerts the player by adding a visual glow effect to the window when a resource is **nearly** depleted (advance warning is given; the delay for this is configurable). When the player has finished offering fish, the nearby fishing spot is highlighted instead.
+For example, if you are fletching, you might have magic logs in your inventory being converted into magic longbow (u). If you have the advance warning set to 3000ms (3 seconds), the first screen alert would begin when the plugin calculates you are 3 seconds away from completing the processing tasks (so, when you have around 1 log left to fletch). The second alert would then start when the item processing is complete.
 
-The game window will also glow a color (configurable) when an action is complete. You can also configure the speed of
-the glow effect, and how long your character needs to stand still for the
-alert to trigger. This is deliberately separate from RuneLite's built-in alerts, as RuneLite's more generic idle notifier occasionally gets stuck when the window is being frequently focused and unfocused, and this more targeted approach does not. Also, the breathing effect on the alert offers an (arguably) less harsh visual alert, while still be noticeable.
+You don't need to tell the plugin which items you are processing, nor what they are being processed into; this is detected automatically. However, you do need to configure the time in ticks each action takes. For example, Consult the OSRS Wiki for more information; the [Runescape Clock page](https://oldschool.runescape.wiki/w/RuneScape_clock) is useful for finding these timings.
+
+This also works for tasks where you are collecting or disposing of items at a consistent rate, as the plugin handles 'processing' of empty inventory slots as if they were items. As a result, this can also be used for gathering skills, although these typically do not have a 100% success rate, so it is not designed to be used this way. An example of where this plugin might behave erratically for this is if you are woodcutting with a 4 tick advance warning, you would end up getting a warning with one log left to cut, even if you repeatedly failed to cut the last log.  

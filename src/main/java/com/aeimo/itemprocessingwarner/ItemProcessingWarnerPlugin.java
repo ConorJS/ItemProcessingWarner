@@ -25,13 +25,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @PluginDescriptor(name = "Item Processing Warner", description = "Alerts and Advance Warnings 0for Item Processing Tasks (e.g. Crafting)", tags = {"item", "items", "processing", "completion", "warn", "warning", "alert", "skilling", "cooking", "crafting", "smithing", "smelting", "fletching", "prayer", "herblore"})
 public class ItemProcessingWarnerPlugin extends Plugin {
-    //<editor-fold desc=constants>
     // @formatter:off
-    //== constants ====================================================================================================================
-
-    private static final Integer[] ANIMATION_POSE_IDS_IDLE = new Integer[]{808, 813}; // probably more. 808=unarmed, 813=skull sceptre
-    //</editor-fold>
-
     //<editor-fold desc=attributes>
     //== attributes ===================================================================================================================
 
@@ -74,7 +68,7 @@ public class ItemProcessingWarnerPlugin extends Plugin {
     //== subscriptions ===============================================================================================================
 
     @Override
-    protected void shutDown() throws Exception {
+    protected void shutDown() {
         overlayManager.remove(overlay);
         clearState();
     }
@@ -82,12 +76,6 @@ public class ItemProcessingWarnerPlugin extends Plugin {
     @Subscribe
     public void onGameTick(GameTick gameTick) {
         System.out.println("===== New tick =====");
-
-        /*if (lastItemDecrease != null && countOfItem(lastItemDecrease) == 0) {
-            System.out.println("Setting processingCompletedTime [1]");
-            processingCompletedTime = LocalDateTime.now();
-            inventoryAtTimeOfProcessingComplete = getInventoryArray();
-        }*/
 
         updateCountsOfItems();
         updatePlayerLocation();
@@ -126,10 +114,6 @@ public class ItemProcessingWarnerPlugin extends Plugin {
     private void onUserInteractionEvent() {
         strongAlert = false;
         weakAlert = false;
-
-        //predictionThresholdBreachedTime = null;
-        //processingCompletedTime = null;
-        //inventoryAtTimeOfProcessingComplete = null;
     }
     //</editor-fold>
 
@@ -139,7 +123,6 @@ public class ItemProcessingWarnerPlugin extends Plugin {
     @Override
     protected void startUp() {
         overlayManager.add(overlay);
-
         updatePlayerLocation();
     }
 
@@ -276,22 +259,6 @@ public class ItemProcessingWarnerPlugin extends Plugin {
             playerLocationMemory.newData(playerLocation);
         }
     }
-
-    // TODO - remove
-    /*private <T> boolean arrayContains(T[] array, T item) {
-        return Arrays.asList(array).contains(item);
-    }
-
-    private boolean onlyOneItemTypeRemaining(int... itemIds) {
-        return Arrays.stream(itemIds)
-                .filter(i -> getItemsCount(i) > 0)
-                .boxed()
-                .count() <= 1;
-    }
-
-    private int[] primIntArray(Integer[] objectArray) {
-        return Arrays.stream(objectArray).mapToInt(obj -> obj).toArray();
-    }*/
     //</editor-fold>
 
     //<editor-fold desc=helpers (alerts)>
@@ -369,10 +336,6 @@ public class ItemProcessingWarnerPlugin extends Plugin {
                 .count();
     }
 
-    private int emptyInventorySlots() {
-        return countOfItem(-1);
-    }
-
     private void updateCountOfItem(int itemId) {
         int count = countOfItem(itemId);
         if (itemCountMemory.containsKey(itemId)) {
@@ -393,16 +356,6 @@ public class ItemProcessingWarnerPlugin extends Plugin {
                 .mapToObj(itemCountMemory::get)
                 .anyMatch(PreviousAndCurrentInt::decreased);
     }
-
-    private int getItemsCount(int... itemIds) {
-        if (itemIds == null) {
-            return 0;
-        }
-        return Arrays.stream(itemIds)
-                .mapToObj(itemCountMemory::get)
-                .mapToInt(PreviousAndCurrentInt::current)
-                .sum();
-    }
     //</editor-fold>
 
     //<editor-fold desc=types>
@@ -417,17 +370,9 @@ public class ItemProcessingWarnerPlugin extends Plugin {
             current = initialValue;
         }
 
-        T current() {
-            return current;
-        }
-
         void newData(T data) {
             previous = current;
             current = data;
-        }
-
-        boolean changed() {
-            return !Objects.equals(previous, current);
         }
     }
 

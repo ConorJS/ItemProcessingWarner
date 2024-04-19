@@ -21,7 +21,7 @@ public class ItemProcessingWarnerOverlay extends Overlay {
         this.client = client;
         this.plugin = plugin;
         setPosition(OverlayPosition.DYNAMIC);
-        setPriority(OverlayPriority.LOW);
+        setPriority(0f);
         setLayer(OverlayLayer.ABOVE_SCENE);
     }
 

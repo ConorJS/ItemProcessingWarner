@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.*;
+import net.runelite.api.widgets.ComponentID;
+import net.runelite.api.widgets.Widget;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
@@ -77,6 +79,15 @@ public class ItemProcessingWarnerPlugin extends Plugin {
     public void onGameTick(GameTick gameTick) {
         System.out.println("===== New tick =====");
 
+        Widget bankContainer = client.getWidget(ComponentID.BANK_ITEM_CONTAINER);
+        if (bankContainer != null && !bankContainer.isSelfHidden()) {
+            // Do nothing and avoid tracking any events if the bank is open, this can trigger false positives.
+            inventoryAtTimeOfProcessingComplete = null;
+            predictionThresholdBreachedTime = null;
+            processingCompletedTime = null;
+            return;
+        }
+
         updateCountsOfItems();
         updatePlayerLocation();
 
@@ -93,6 +104,7 @@ public class ItemProcessingWarnerPlugin extends Plugin {
         } else {
             inventoryAtTimeOfProcessingComplete = null;
             predictionThresholdBreachedTime = null;
+            processingCompletedTime = null;
         }
 
         strongAlert = shouldDoAlertStrong();
@@ -114,6 +126,8 @@ public class ItemProcessingWarnerPlugin extends Plugin {
     private void onUserInteractionEvent() {
         strongAlert = false;
         weakAlert = false;
+        lastItemIncrease = null;
+        lastItemDecrease = null;
     }
     //</editor-fold>
 

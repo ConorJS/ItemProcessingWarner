@@ -77,8 +77,6 @@ public class ItemProcessingWarnerPlugin extends Plugin {
 
     @Subscribe
     public void onGameTick(GameTick gameTick) {
-        System.out.println("===== New tick =====");
-
         Widget bankContainer = client.getWidget(ComponentID.BANK_ITEM_CONTAINER);
         if (bankContainer != null && !bankContainer.isSelfHidden()) {
             // Do nothing and avoid tracking any events if the bank is open, this can trigger false positives.
@@ -92,14 +90,10 @@ public class ItemProcessingWarnerPlugin extends Plugin {
         updatePlayerLocation();
 
         if (lastItemDecrease != null && countOfItem(lastItemDecrease) == 0) {
-            System.out.println("Last item to decrease has 0 left...");
             int[] currentInventory = getInventoryArray();
             if (!Arrays.equals(currentInventory, inventoryAtTimeOfProcessingComplete)) {
-                System.out.println("Setting processingCompletedTime");
                 processingCompletedTime = LocalDateTime.now();
                 inventoryAtTimeOfProcessingComplete = currentInventory;
-            } else {
-                System.out.println("Not setting processingCompletedTime, inventory same as it was when it was last set.");
             }
         } else {
             inventoryAtTimeOfProcessingComplete = null;
@@ -113,13 +107,11 @@ public class ItemProcessingWarnerPlugin extends Plugin {
 
     @Subscribe
     public void onMenuOptionClicked(MenuOptionClicked click) {
-        System.out.println("DEBUG: onMenuOptionClicked");
         onUserInteractionEvent();
     }
 
     @Subscribe
     public void onMenuOpened(MenuOpened click) {
-        System.out.println("DEBUG: onMenuOpened");
         onUserInteractionEvent();
     }
 
@@ -151,17 +143,14 @@ public class ItemProcessingWarnerPlugin extends Plugin {
 
     protected boolean shouldDoAlertWeak() {
         if (!config.usePreEmptiveAlerts()) {
-            System.out.println("Weak alert: NO (Not configured)");
             return false;
         }
 
         if (userInteractingWithClient()) {
-            System.out.println("Weak alert: NO (User interacting)");
             return false;
         }
 
         if (predictionThresholdBreachedTime != null && client.getMouseLastPressedMillis() >= timeSinceEpoch(predictionThresholdBreachedTime)) {
-            System.out.println("Weak alert: NO (User clicked since last prediction threshold breached)");
             return false;
         }
 
@@ -182,35 +171,19 @@ public class ItemProcessingWarnerPlugin extends Plugin {
         int ticksSinceLastAction = ticksSinceLastItemChange % config.ticksPerAction();
 
         int estimatedTicksLeft = ((config.ticksPerAction() * subject) - ticksSinceLastAction);
-        if (thresholdTicks >= estimatedTicksLeft) {
-            System.out.printf("Weak alert: YES (ticks since last action: %d, items left: %d, ticks left: %d, threshold: %d%n", ticksSinceLastAction, subject, estimatedTicksLeft, thresholdTicks);
-        } else {
-            System.out.printf("Weak alert: NO (ticks since last action: %d, items left: %d, ticks left: %d, threshold: %d%n", ticksSinceLastAction, subject, estimatedTicksLeft, thresholdTicks);
-        }
-
         return thresholdTicks >= estimatedTicksLeft;
     }
 
     private boolean shouldDoAlertStrong() {
         if (userInteractingWithClient()) {
-            System.out.println("Strong alert: NO (User interacting)");
             return false;
         }
 
         if (processingCompletedTime == null) {
             // The client hasn't seen the user finish processing a set of items this session.
-            System.out.println("Strong alert: NO (No processing completion seen yet)");
             return false;
         }
 
-        System.out.println("DEBUG processingCompletedTime: " + timeSinceEpoch(processingCompletedTime));
-        System.out.println("DEBUG MouseLastPressedMillis: " + client.getMouseLastPressedMillis());
-
-        if (client.getMouseLastPressedMillis() >= timeSinceEpoch(processingCompletedTime)) {
-            System.out.println("Strong alert: NO (User clicked since last processing event completed)");
-        } else {
-            System.out.println("Strong alert: YES (User not clicked since last processing event completed)");
-        }
         // Only alert if the user hasn't clicked since the last set of items finished processing.
         return client.getMouseLastPressedMillis() < timeSinceEpoch(processingCompletedTime);
     }

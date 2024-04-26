@@ -64,7 +64,7 @@ public interface ItemProcessingWarnerConfig extends Config {
             keyName = "ticksPerAction",
             description = "How many ticks does it take to process each item, for whatever activity being done?",
             position = 5)
-    @Units(Units.MILLISECONDS)
+    @Units(Units.TICKS)
     default int ticksPerAction() {
         return TICKS_PER_ACTION;
     }

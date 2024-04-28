@@ -276,6 +276,14 @@ public class ItemProcessingWarnerPlugin extends Plugin {
         return config.maxBreatheIntensityPercent();
     }
 
+    public int getWeakGlowBreathePeriod() {
+        return config.weakGlowSpeedMs();
+    }
+
+    public int getWeakMaxBreatheIntensityPercent() {
+        return config.weakMaxBreatheIntensityPercent();
+    }
+
     public Color getGlowColor() {
         return config.glowColor();
     }

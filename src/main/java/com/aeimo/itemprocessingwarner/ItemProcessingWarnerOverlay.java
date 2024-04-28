@@ -27,21 +27,43 @@ public class ItemProcessingWarnerOverlay extends Overlay {
 
     @Override
     public Dimension render(Graphics2D graphics) {
-        boolean strongAlert = plugin.isDoAlertStrong();
-        if (strongAlert || plugin.isDoAlertWeak()) {
-            Color glowColor = strongAlert ? plugin.getGlowColor() : plugin.getWeakGlowColor();
-            graphics.setColor(new Color(
-                    glowColor.getRed(),
-                    glowColor.getGreen(),
-                    glowColor.getBlue(),
-                    getBreathingAlpha(plugin.getGlowBreathePeriod(), strongAlert ? 1.0f : 0.5f))
-            );
-            graphics.fill(getGameWindowRectangle());
+        if (plugin.isDoAlertStrong()) {
+            glowGameWindowRectangle(
+                    graphics,
+                    plugin.getGlowColor(),
+                    plugin.getGlowBreathePeriod(),
+                    plugin.getMaxBreatheIntensityPercent(),
+                    1.0f);
+
+        } else if (plugin.isDoAlertWeak()) {
+            glowGameWindowRectangle(
+                    graphics,
+                    plugin.getWeakGlowColor(),
+                    plugin.getWeakGlowBreathePeriod(),
+                    plugin.getWeakMaxBreatheIntensityPercent(),
+                    0.5f);
+
         } else {
             isRenderingAlertAnimation = false;
         }
 
         return null;
+    }
+
+    private void glowGameWindowRectangle(
+            Graphics2D graphics,
+            Color glowColor,
+            int glowPeriod,
+            int maxIntensityBreathePercent,
+            float intensityModifier) {
+
+        graphics.setColor(new Color(
+                glowColor.getRed(),
+                glowColor.getGreen(),
+                glowColor.getBlue(),
+                getBreathingAlpha(glowPeriod, maxIntensityBreathePercent, intensityModifier))
+        );
+        graphics.fill(getGameWindowRectangle());
     }
 
     private Rectangle getGameWindowRectangle() {
@@ -53,11 +75,11 @@ public class ItemProcessingWarnerOverlay extends Overlay {
         return new Rectangle(adjustedLocation, clientCanvasSize);
     }
 
-    private int getBreathingAlpha(int breathePeriodMillis, float intensityModifier) {
+    private int getBreathingAlpha(int breathePeriodMillis, int maxIntensityBreathePercent, float intensityModifier) {
         double currentMillisOffset = System.currentTimeMillis() % breathePeriodMillis;
         double fractionCycleComplete = currentMillisOffset / breathePeriodMillis;
 
-        int maxIntensityPc = (int) ((float) plugin.getMaxBreatheIntensityPercent() * intensityModifier);
+        int maxIntensityPc = (int) ((float) maxIntensityBreathePercent * intensityModifier);
         double fractionAlpha = Math.sin(fractionCycleComplete * 2 * Math.PI);
         double fractionAlphaPositive = (fractionAlpha + 1) / 2;
 
